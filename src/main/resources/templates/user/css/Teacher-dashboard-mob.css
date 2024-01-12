@@ -1,0 +1,210 @@
+@media only screen and (max-width: 600px) {
+
+    body {
+      padding: 0;
+      margin: 0;
+      font-family: Tahoma;
+      font-size: 3vw;
+    }
+  
+    /* 
+    * Header section
+    navbar css start  */
+    nav {
+      display: flex;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+      background-color: rgba(244, 244, 244, 0.7);
+      backdrop-filter: blur(6px);
+  
+    }
+  
+    .logo {
+      width: -moz-available;
+      margin-left: 1%;
+    }
+  
+    .logo img {
+      width: 5rem;
+    }
+  
+    .nav {
+      width: -moz-available;
+    }
+  
+    .nav-list {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      
+    }
+  
+    li {
+  
+      list-style: none;
+  
+  
+    }
+  
+    li a {
+      display: block;
+      text-decoration: none;
+      color: #333;
+      width: 6rem;
+      text-align: center;
+      padding: 0.9rem;
+    }
+  
+    .nav-list li a:hover {
+      background-color: black;
+      color: white;
+    }
+  
+    /* nav bar end 
+    //
+    //
+    */
+  
+    section {
+      display: flex;
+    }
+  
+    .main-slidebar {
+      display: flex;
+      flex-direction: column;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+      background-color: rgba(244, 244, 244, 0.7);
+      backdrop-filter: blur(6px);
+      margin-top: 2%;
+      margin-left: 1%;
+      justify-content: space-between;
+  
+      width: 17%;
+      text-align: center;
+    }
+  
+    .blur-background {
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+      background-color: rgba(244, 244, 244, 0.7);
+      backdrop-filter: blur(6px);
+    }
+    .timetable{
+      width: 20%;
+      margin-top: 2%;
+      margin-left: 3rem;
+    }
+    /* timetable grade batch css */
+    .grade-selector , .batch-selector{
+      background-color: #333;
+      color: white;
+      border: none;
+      margin-top: 1rem;
+      padding: 1rem ;
+    }
+    .grade-batch{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      
+    }
+    .active {
+      color: #fff; /* Change the color to your preference */
+      background-color:green; /* Change the background color to your preference */
+      /* Add any additional styling as needed */
+    }
+    .active-slidebar{
+      background-color: grey;
+    }
+  
+    .slidebar {
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 1px 2px, rgba(0, 0, 0, 0.22) 0px 1px 1px;
+      cursor: pointer;
+    
+    }
+
+    div.scrollmenu {
+      background-color: #333;
+    
+    }
+    div.scrollmenu {
+      overflow-x: auto;
+      white-space: nowrap;
+      display: flex;
+    }
+  
+    div.scrollmenu a {
+      display: inline-block;
+      color: white;
+      text-align: center;
+      padding: 19px;
+      text-decoration: none;
+    }
+  
+    /*hover effect*/
+    div.scrollmenu a:hover {
+      background-color: grey;
+    }
+  
+    .slidebar:hover {
+      background-color: black;
+      color: white;
+    }
+  
+    .slidebar:focus {
+      background-color: green;
+      color: white;
+    }
+  
+    #content-div {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+  
+    .clicked {
+      background-color: green;
+      /* Change to your desired color */
+    }
+  
+  
+    /* change content of dashboard */
+    .dashboard{
+      display: flex;
+      flex-direction: column;
+    }
+  
+  
+  
+  
+    .main-content {
+      margin-left: 0;
+      margin-top: 2%;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    .quick-links {
+      display: flex;
+      flex-direction: column;
+      margin-top: 2%;
+    }
+  
+    .roster,
+    .marks-exam {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      justify-content: space-around;
+      text-align: center;
+    }
+  
+    .site-footer {
+      display: none;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+      background-color: rgba(244, 244, 244, 0.7);
+      backdrop-filter: blur(6px);
+    }
+  
+  }
+  

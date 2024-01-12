@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="css/Teacher-dashboard.css" rel="stylesheet">
+    <link href="css/Teacher-dashboard-mob.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <nav>
+        <div class="logo">
+            <img src="img\logo.png" alt="logo">
+        </div>
+        <div class="nav">
+            <ul class="nav-list">
+                <li><a class="active" href="#">Home</a></li>
+                <li><a href="#">Test</a></li>
+                <li><a href="#">Service</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Log Out</a></li>
+            </ul>
+
+        </div>
+    </nav>
+    <section>
+        <aside class="main-slidebar">
+            <div class="slidebar" id="dashboard-tab" onclick="changeContent('dashboard-tab')">
+                <h6>DashBoard</h6>
+            </div>
+            <div class="slidebar" id="time-table-tab" onclick="changeContent('time-table-tab')">
+                <h6>Time Table</h6>
+            </div>
+            <div class="slidebar" id="student-info" onclick="changeContent('student-info')">
+                <h6>Student information</h6>
+            </div>
+            <div class="slidebar" id="attendance" onclick="changeContent('attendance')">
+                <h6>Attendance</h6>
+            </div>
+            <div class="slidebar" id="exam" onclick="changeContent('exam')">
+                <h6>Exam</h6>
+            </div>
+            <div class="slidebar" id="syllabus" onclick="changeContent('syllabus')">
+                <h6>Syllabus</h6>
+            </div>
+            <div class="slidebar" id="salary" onclick="changeContent('salary')">
+                <h6>Salary</h6>
+            </div>
+            <div class="slidebar" id="roster" onclick="changeContent('roster')">
+                <h6>Roster</h6>
+            </div>
+            <div class="slidebar" id="notice" onclick="changeContent('notice')">
+                <h6>Notice</h6>
+            </div>
+        </aside>
+
+        <div class="timetable" id="timetable">
+            <div id="date-selector">
+                <div class="scrollmenu" id="dateScroll">
+                </div>
+            </div>
+            <div class="grade-batch">
+                <div class="grade">
+                    <select class="grade-selector">
+                        <option value="1st Grade">1st Grade</option>
+                        <option value="2nd Grade">2nd Grade</option>
+                        <option value="3rd Grade">3rd Grade</option>
+                        <option value="4th Grade">4th Grade</option>
+                        <option value="5th Grade">5th Grade</option>
+                        <option value="6th Grade">6th Grade</option>
+                        <option value="7th Grade">7th Grade</option>
+                        <option value="8th Grade">8th Grade</option>
+                        <option value="9th Grade">9th Grade</option>
+                        <option value="10th Grade">10th Grade</option>
+                        <option value="11th Grade">11th Grade</option>
+                        <option value="12th Grade">12th Grade</option>
+                    </select>
+                </div>
+                <div class="batch">
+                    <select class="batch-selector">
+                        <option value="batch 1">Batch 1</option>
+                        <option value="batch 2">Batch 2</option>
+                        <option value="batch 3">Batch 3</option>
+                    </select>
+
+
+                </div>
+            </div>
+
+            <div id="content-div">
+                Initial content here
+
+            </div>
+        </div>
+        <main class="main-content">
+            <div class="quick-links blur-background" id="content-dashboard">
+
+                <div class="time-table" id="time-table">
+                    <h1>
+                        time-table
+                    </h1>
+                </div>
+
+            </div>
+
+        </main>
+
+
+    </section>
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <h6>Copyright &copy; 2023 Your Website Name</h6>
+                    <p>All rights reserved.</p>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <h6>Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <h6>Follow Us</h6>
+                    <ul class="social-links">
+                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="js\teacher-dashboard.js"></script>
+
+
+</html>

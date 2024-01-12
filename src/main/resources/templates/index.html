@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link th:href="@{css/index.css}" rel="stylesheet">
+    <title>PREMate</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img th:src="@{/img/logo.png}" alt="logo">
+            </div>
+            <div class="nav">
+                <ul class="nav-list">
+                    <li><a class="active" href="#">Home</a></li>
+                    <li><a href="#">Test</a></li>
+                    <li><a href="#">Service</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li>
+                        <div class="dropdown">
+                            <button class="dropbtn">Login
+                                  <i class="fa fa-caret-down"></i>
+                                </button>
+                            <div class="dropdown-content">
+                                <a href="login/teacherlogin.html">Teacher</a>
+                                <a href="login/studentlogin.html">Student</a>
+                                <a href="adminLogin">Admin</a>
+            
+                            </div>
+                        </div>
+                    </li>
+                   
+                </ul>
+                
+    
+            </div>
+        </nav>
+    </header>
+    <section class="main">
+        <section>
+
+            <div class="mainsub">
+                <h1>Highly Reputed</h1>
+                <h2>No #1 Assessment Tool</h2>
+                <p>Trusted by more than 10 million users globally for Objective, Descriptive, Viva, and Coding Tests with advanced AI Proctoring.</p>
+            </div>
+            <div>
+                <button><a href="admin_register">Getting Started</a></button>
+            </div>
+
+
+        </section>
+
+    </section>
+    <section>
+        <div>
+            <h1>About Us</h1>
+        </div>
+    </section>
+
+    <footer>
+        <div class="foot">
+            <div class="add">
+                <address>
+                <p>PREMate education pvt.ltd</p>
+                <p>Neral,navi mumbai</p>
+                <p>Maharashtra</p>
+               
+                <a href="mailto:premate@gmail.com">premate@gmail.com</a>
+
+            </address>
+
+            </div>
+            <div class="footnav">
+                <ul>
+                    <h4>Product</h4>
+                    <li>Online Assesment</li>
+                    <li>Tutor Management</li>
+                    <li>eLearning</li>
+
+                </ul>
+                <ul>
+                    <h4>Quick Links</h4>
+                    <li>Pricing</li>
+                    <li>Documentation</li>
+                    <li>Term and condition</li>
+
+                </ul>
+                <ul>
+                    <h4>Company</h4>
+                    <li>About Us</li>
+                    <li>Our Story</li>
+                    <li>Our Team</li>
+
+                </ul>
+
+            </div>
+
+
+        </div>
+        <div class="lastfoot">
+            <span>
+                © 2022 PREMate education pvt.ltd | All Rights Reserved 
+            </span>
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

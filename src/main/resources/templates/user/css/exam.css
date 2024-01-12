@@ -1,0 +1,31 @@
+.head,
+.main,
+.question,
+.questionfoot,
+.view,
+.viewmain,
+.viewfoot {
+    display: block;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.head {
+    height: 20vh;
+    width: 100%;
+}
+
+.main {
+    height: 78vh;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.view {
+    margin-right: 0%;
+    margin-left: 842px;
+}

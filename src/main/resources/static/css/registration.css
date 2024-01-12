@@ -1,0 +1,120 @@
+body {
+  
+    margin: 0;
+    font-family: Tahoma;
+    font-size: 14px;
+    background-image: url("../../img/backg.jpg"); /* Replace with your desired background image URL */
+    background-size: cover;
+  }
+  
+  .registration {
+    width: min-content;
+    background-color: aliceblue;
+    margin: auto;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    background-color: rgba(244, 244, 244, 0.7);
+    backdrop-filter: blur(6px);
+    padding: 5px;
+    margin-top: 3%;
+    display: flex;
+  }
+  .info svg{
+    width: fit-content;
+  }
+  .info{
+    width: 50%;
+    display: flex;
+    align-items: center;
+  }
+  h1,
+  p {
+    text-align: center;
+    padding-top: 5px;
+  }
+  
+  form {
+    width: 85%;
+    margin: auto;
+  }
+  
+  fieldset {
+ 
+    border: none;
+  }
+  
+  .pernlinfo {
+    display: flex;
+    flex-direction: column;
+    /* Add space between form elements */
+    gap: 0.4em;
+  }
+  .name-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+   .name-field input{
+    width: 25%;
+   }  
+  
+  
+  .ingend {
+    margin-left: 45px;
+    padding-left: 0px;
+    margin-right: 6px;
+  }
+  
+  input:not(.submit,
+  .inline) {
+    padding: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .inline {
+    width: unset;
+    margin: 0 0.5em 0 0;
+    vertical-align: middle;
+    display: inline;
+  }
+  
+  .error-message { /* Style for error messages */
+    color: red;
+    font-size: smaller;
+    display: none;
+  }
+  
+  input:invalid + .error-message {
+    display: block;
+  }
+  
+  select { /* Style for dropdowns (Experience & Education) */
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+  }
+  
+  input[type="radio"] { /* Style for radio buttons (Expertise) */
+    margin: 0 0.5em 0 0;
+    vertical-align: middle;
+  }
+  
+  label[for="expertise"] {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+  .error{
+	  color: red;
+  }
+  
+  .submit {
+    padding: 12px;
+    width: -moz-available;/* Adjust width for centering based on form width */
+    /*border-radius: 18px;*/
+    color: white;
+    background-color: green;
+    margin: 0 auto;
+
+  }
+  
