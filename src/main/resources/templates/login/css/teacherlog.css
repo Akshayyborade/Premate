@@ -1,0 +1,71 @@
+body {
+    width: 100%;
+    height: 96vh;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../../img/backg.jpg");
+    background-size: cover;
+}
+
+form {
+    height: 476.8px;
+    width: 521.7px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    background-color: rgba(244, 244, 244, 0.7);
+    backdrop-filter: blur(6px);
+}
+
+.imgcontainer {
+    margin-top: 11px;
+    display: flex;
+    justify-content: center;
+    flex-flow: column;
+    align-items: center;
+    font-weight: bolder;
+    font-size: large;
+}
+
+.avatar {
+    width: 14%;
+}
+
+label,
+input[type=text],
+input[type=password] {
+    display: block;
+    margin: 13px;
+    width: 90%;
+}
+
+input[type=text],
+input[type=password] {
+    padding: 10px;
+}
+
+.bttn {
+    display: flex;
+    flex-direction: column
+}
+
+button {
+    padding: 10px;
+    width: 94%;
+    margin: 13px;
+    background-color: green;
+    color: aliceblue;
+}
+
+.container1 {
+    background-color: #f1f1f1;
+    padding: 10px;
+    margin-bottom: -1px;
+}
+
+.signup {
+    margin-left: 198px;
+}
