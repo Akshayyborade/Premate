@@ -31,7 +31,7 @@ public class HomeController {
 		return "registration/Admin-registration";
 	}
 
-	@GetMapping("/adminlogin")
+	@RequestMapping("adminlogin")
 	public String adminlogin() {
 
 		return "login/adminlogin";
@@ -82,7 +82,7 @@ public class HomeController {
 			
 		}
 	}
-	@RequestMapping("/home")
+	@GetMapping("/home")
 	@ResponseBody
 	public String admindash() {
 		return "hii admin how are you";

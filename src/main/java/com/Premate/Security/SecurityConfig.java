@@ -16,13 +16,14 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		return http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(authorize -> authorize
+		return http.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/adminlogin", "/admin_register", "/", "css/**", "img/**", "/adminReg", "/adminLogin")
 				.permitAll().anyRequest().authenticated())
 				.formLogin(login -> login.loginPage("/adminlogin").usernameParameter("username")
 						.passwordParameter("password").loginProcessingUrl("/adminLogin").defaultSuccessUrl("/home").failureUrl("/login?error"))
 				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout"))
 				// No need to explicitly provide AuthenticationManager here
+				
 				.build();
 	}
 
