@@ -2,27 +2,49 @@ package com.Premate.Service;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.Premate.Model.Admin;
 import com.Premate.Repository.AdminRepo;
+import com.Premate.payload.AdminDto;
 
 @Service
 public class AdminServiceImpl implements AdminServices{
+	@Autowired
+	private AdminRepo adminRepo;
+	@Autowired
+	private ModelMapper modelMapper;
+	
 
-    @Autowired
-    private AdminRepo adminRepository;
-
-    public Admin findByEmail(String email) {
-        List<Admin> adminList = adminRepository.findByEmail(email);
-        System.out.println(adminList);
-        return adminList.isEmpty() ? null : adminList.get(0); // or throw an exception if not found
-    }
-    public Admin regiAdmin(Admin admin) {
-		
-		Admin ad = adminRepository.save(admin);
-		System.out.println(ad);
-		return ad;
+	@Override
+	public AdminDto createAdmin(AdminDto adminDto) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	@Override
+	public AdminDto updateAdmin(AdminDto adminDto, int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AdminDto deleteAdmin(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AdminDto getAdmin(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<AdminDto> getAdminAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
