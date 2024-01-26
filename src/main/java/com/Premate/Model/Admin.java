@@ -1,13 +1,13 @@
 package com.Premate.Model;
 
 import java.sql.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,6 +35,14 @@ public class Admin
     private AppUserRole appUserRole;
 	private boolean locked;
 	private boolean enabled;
+//	private Student student;
+//	private Teacher teacher;
+//	private Grade grade;
+//	private Subjects subjects;
+//	private Attendance attendance;
+//	private Timetable timetable;
+//	private Result result;
+//	private Exam exam;
 	public Admin(String institutionName, String email, String password, String website, Date foundingDate,
 			String slogan, AppUserRole appUserRole) {
 		super();

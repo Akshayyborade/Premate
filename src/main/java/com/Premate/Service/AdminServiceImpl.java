@@ -31,6 +31,7 @@ public class AdminServiceImpl implements AdminServices{
 	public AdminDto updateAdmin(AdminDto adminDto, int id) {
 		// TODO Auto-generated method stub
 		Admin existingAdmin = adminRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Admin", "Admin id", id));
+		adminDto.setInstitutionId(existingAdmin.getInstitutionId());
 		// Map the properties from adminDto to existingAdmin
 	    modelMapper.map(adminDto, existingAdmin);
 
