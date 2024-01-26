@@ -1,41 +1,29 @@
 package com.Premate.Model;
 
 import java.sql.Date;
-import java.util.Arrays;
-import java.util.Collection;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-@SuppressWarnings("serial")
+//@SuppressWarnings("serial")
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class Admin implements UserDetails{
+public class Admin 
+//implements UserDetails
+{
 
-	 @SequenceGenerator(
-	            name = "admin_sequence",
-	            sequenceName = "admin_sequence",
-	            allocationSize = 1
-	    )
-	    @Id
-	    @GeneratedValue(
-	            strategy = GenerationType.SEQUENCE,
-	            generator = "admin_sequence"
-	    )
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int institutionId;
 	private String institutionName;
 	private String email;
@@ -47,6 +35,14 @@ public class Admin implements UserDetails{
     private AppUserRole appUserRole;
 	private boolean locked;
 	private boolean enabled;
+//	private Student student;
+//	private Teacher teacher;
+//	private Grade grade;
+//	private Subjects subjects;
+//	private Attendance attendance;
+//	private Timetable timetable;
+//	private Result result;
+//	private Exam exam;
 	public Admin(String institutionName, String email, String password, String website, Date foundingDate,
 			String slogan, AppUserRole appUserRole) {
 		super();
@@ -60,34 +56,33 @@ public class Admin implements UserDetails{
 	}
 
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		   System.out.println("User role working");
-	    return Arrays.asList(new SimpleGrantedAuthority(appUserRole.name()));
-	 
-	}
-
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-	    return email;
-	}
-	@Override
-	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
-		return true;
-	}
-	@Override
-	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
-		return true;
-	}
-	@Override
-	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
-		return true;
-	}
-	
+//	@Override
+//	public Collection<? extends GrantedAuthority> getAuthorities() {
+//		   System.out.println("User role working");
+//	    return Arrays.asList(new SimpleGrantedAuthority(appUserRole.name()));
+//	 
+//	}
+//
+//	@Override
+//	public String getUsername() {
+//		// TODO Auto-generated method stub
+//	    return email;
+//	}
+//	@Override
+//	public boolean isAccountNonExpired() {
+//		// TODO Auto-generated method stub
+//		return true;
+//	}
+//	@Override
+//	public boolean isAccountNonLocked() {
+//		return true;
+//	}
+//	@Override
+//	public boolean isCredentialsNonExpired() {
+//		// TODO Auto-generated method stub
+//		return true;
+//	}
+//	
 	
 
 }
