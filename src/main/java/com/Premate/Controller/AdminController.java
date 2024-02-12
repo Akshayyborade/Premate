@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +21,7 @@ import com.Premate.payload.AdminDto;
 public class AdminController {
 	@Autowired
 	AdminServices adminServices;
-	@PostMapping("/register")
-   public ResponseEntity<AdminDto> createAdmin(@RequestBody AdminDto adminDto){
-		AdminDto dto = adminServices.createAdmin(adminDto);
-	   return new ResponseEntity<>(dto,HttpStatus.CREATED);
-   }
+	
 	@GetMapping("/getAdmin/{adminId}")
 	public  ResponseEntity<AdminDto> getAdmin(@PathVariable int adminId){
 		AdminDto admin = adminServices.getAdmin(adminId);

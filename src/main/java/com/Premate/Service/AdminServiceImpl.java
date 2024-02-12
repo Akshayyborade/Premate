@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.Premate.Exception.ResourceNotFoundException;
 import com.Premate.Model.Admin;
+import com.Premate.Model.AppUserRole;
 import com.Premate.Repository.AdminRepo;
 import com.Premate.payload.AdminDto;
 
@@ -62,6 +63,13 @@ public class AdminServiceImpl implements AdminServices{
 		// TODO Auto-generated method stub
 		List<AdminDto> admins = adminRepo.findAll().stream().map(admin-> modelMapper.map(admin, AdminDto.class)).collect(Collectors.toList());
 		return admins ;
+	}
+
+	@Override
+	public AppUserRole getAppUserRole(int id) {
+		// TODO Auto-generated method stub
+		Admin admin= adminRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Admin", "Admin id", id));
+		return admin.getAppUserRole();
 	}
 
 }

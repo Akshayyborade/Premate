@@ -2,6 +2,7 @@ package com.Premate.Service;
 
 import java.util.List;
 
+import com.Premate.Model.AppUserRole;
 import com.Premate.payload.AdminDto;
 
 public interface AdminServices {
@@ -16,4 +17,5 @@ public interface AdminServices {
 	//getall
 	List<AdminDto> getAdminAll();
 	//other required 
+	AppUserRole getAppUserRole(int id );
 }

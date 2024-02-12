@@ -1,38 +1,53 @@
-//package com.Premate.Service;
-//
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Optional;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.core.authority.SimpleGrantedAuthority;
-//import org.springframework.security.core.userdetails.User;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.stereotype.Service;
-//
-//import com.Premate.Model.Admin;
-//import com.Premate.Repository.AdminRepo;
-//@Service
-//public class MyUserDetailsService implements UserDetailsService {
-//
-//    @Autowired
-//    private AdminRepo adminRepository;
-//
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
-//
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        List<Admin> adminList = adminRepository.findByEmail(username);
-//        if (adminList.isEmpty()) {
-//            throw new UsernameNotFoundException("Admin not found!");
+package com.Premate.Service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.Premate.Exception.UserNotVerifiedException;
+import com.Premate.Model.Admin;
+import com.Premate.Repository.AdminRepo;
+
+@Service
+public class MyUserDetailsService implements UserDetailsService {
+    @Autowired
+    private  AdminRepo adminRepo;
+
+
+  
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Admin admin = adminRepo.findByEmail(username).get(0);
+        System.out.println(admin);
+        // Assuming repository for Admin entity
+        System.out.println("in user detail");
+
+        if (admin == null) {
+            throw new UsernameNotFoundException("User not found: " + username);
+        }
+        if(!admin.isEnabled()) {
+        	throw new UserNotVerifiedException("Admin not verified");
+        }
+
+        // Check if account is locked before granting access
+        if (admin.isLocked()) {
+            throw new LockedException("Account is locked");
+        }
+
+        // Consider using a PasswordEncoder interface implementation for password security
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); // Example encoder
+//        if (!encoder.matches(password, admin.getPassword())) {
+//            throw new BadCredentialsException("Invalid credentials");
 //        }
-//        Admin admin = adminList.get(0); // Assuming only one admin with the email
-//        return new User(admin.getEmail(), admin.getPassword(),
-//                admin.isEnabled(), true, true, true,
-//                Collections.singletonList(new SimpleGrantedAuthority("ADMIN"))); // Assign ADMIN role
-//    }
-//}
+
+        // Construct and return UserPrincipal with authorities
+        return admin;
+    }
+
+   
+
+}
