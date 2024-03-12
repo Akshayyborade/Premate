@@ -2,6 +2,7 @@ package com.Premate.payload;
 
 import java.sql.Date;
 
+import com.Premate.Model.Address;
 import com.Premate.Model.Grade;
 import com.Premate.Model.Name;
 import com.Premate.Model.Parents;
@@ -69,4 +70,9 @@ public class StudentDto {
      * The grade of the student.
      */
     private Grade grade;
+    
+    /**
+     * The address of the student.
+     */
+    private Address address;
 }

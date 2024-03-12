@@ -1,4 +1,4 @@
-package com.Premate.Model;
+package com.Premate.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

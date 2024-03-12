@@ -14,7 +14,7 @@ public class LoginResponse {
   
 	private String message;
     private AdminDto admin;
-    private String token;
+    private String jwtToken;
 	public LoginResponse(String message, AdminDto admin) {
 		super();
 		this.message = message;

@@ -10,8 +10,10 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.Premate.Service.MyUserDetailsService;
 
@@ -22,7 +24,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 	@Autowired
      private MyUserDetailsService myUserDetailsService;
-	
+	@Autowired
+    private JwtAuthenticationEntryPoint point;
+    @Autowired
+    private JwtAuthenticationFilter filter;
    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -30,11 +35,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests
 
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/student/**").hasAnyRole("ADMIN", "STUDENT")
-                        .requestMatchers("/api/teachers/**").hasAnyRole("TEACHER", "ADMIN")
-                        .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults());
+//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")   this will implimented later
+//                        .requestMatchers("/api/student/**").hasAnyRole("ADMIN", "STUDENT")
+//                        .requestMatchers("/api/teachers/**").hasAnyRole("TEACHER", "ADMIN")
+                        .anyRequest().authenticated()).exceptionHandling(ex->ex.authenticationEntryPoint(point))
+                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+                
 //                .formLogin(login -> login.loginPage("/adminLogin").defaultSuccessUrl("/"));
                
 		return http.build();

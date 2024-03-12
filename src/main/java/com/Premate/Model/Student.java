@@ -102,10 +102,12 @@ public class Student {
 
 	@ManyToMany(mappedBy = "students")
 	private List<Exam> exam;
-	@OneToOne(mappedBy = "student")
+	@ManyToOne(cascade = CascadeType.ALL)
 	private Timetable timetable;
 	@OneToMany(mappedBy = "student")
 	private List<Result> results;
+	@OneToMany(mappedBy = "student")
+	private List<Address> address;
 
 	/**
 	 * Role of the student in the application.

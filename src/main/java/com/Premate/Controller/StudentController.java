@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
  * Controller class for managing student-related operations.
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/student")
 public class StudentController {
     
@@ -34,6 +37,7 @@ public class StudentController {
      * @param studentDto The data of the student to be registered.
      * @return ResponseEntity with the created student and HTTP status.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<StudentDto> createStudent(@RequestBody StudentDto studentDto){
         System.out.println(studentDto.toString());
