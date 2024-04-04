@@ -1,5 +1,8 @@
 package com.Premate.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.Premate.Exception.ResourceNotFoundException;
+import com.Premate.Model.Address;
+import com.Premate.Model.Admin;
 import com.Premate.Model.Grade;
 import com.Premate.Model.Name;
 import com.Premate.Model.Parents;
@@ -16,7 +21,9 @@ import com.Premate.Repository.GradeRepo;
 import com.Premate.Repository.NameRepo;
 import com.Premate.Repository.ParentsRepo;
 import com.Premate.Repository.StudentRepo;
+import com.Premate.payload.AdminDto;
 import com.Premate.payload.StudentDto;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
 /**
  * Service implementation for managing student-related operations.
@@ -38,6 +45,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Autowired
     private ParentsRepo parentsRepo;
+    
+    @Autowired 
+    AdminServices adminServices;
+    
+    @Autowired
+    Date date;
 
     /**
      * Create a new student.
@@ -46,8 +59,8 @@ public class StudentServiceImpl implements StudentService {
      * @return The created student as a DTO.
      */
     @Override
-    public StudentDto createStud(StudentDto studentDto) {
-        Name name = studentDto.getStudentName();
+    public StudentDto createStud(StudentDto studentDto, int adminid) {
+        Name name = studentDto.getName();
         nameRepo.save(name);
 
         Grade grade = studentDto.getGrade();
@@ -55,8 +68,16 @@ public class StudentServiceImpl implements StudentService {
 
         Parents parents = studentDto.getParents();
         parentsRepo.save(parents);
+        Student student = modelMapper.map(studentDto, Student.class);
+        
+        LocalDate localDate = LocalDate.now();
+        student.setDateOfAddmission(localDate);
+        Admin adminDto = adminServices.getAdmin(adminid);
+        Admin admin = modelMapper.map(adminDto, Admin.class);
+        student.setAdminId(adminid);
+        
 
-        Student save = studentRepo.save(modelMapper.map(studentDto, Student.class));
+        Student save = studentRepo.save(student);
         return modelMapper.map(save, StudentDto.class);
     }
 
@@ -69,6 +90,7 @@ public class StudentServiceImpl implements StudentService {
      */
     @Override
     public StudentDto updateStud(StudentDto studentDto, int id) {
+    	
         Student student = studentRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student", "StudentId", id));
         studentDto.setStud_id(student.getStud_id());
         modelMapper.map(studentDto, student);
@@ -105,10 +127,9 @@ public class StudentServiceImpl implements StudentService {
      */
     @Override
     public List<StudentDto> getAllStud() {
-        List<StudentDto> studentDtos = studentRepo.findAll().stream()
+        return studentRepo.findAll().stream()
                 .map(student -> modelMapper.map(student, StudentDto.class))
                 .collect(Collectors.toList());
-        return studentDtos;
     }
 
     /**

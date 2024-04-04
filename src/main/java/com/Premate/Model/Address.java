@@ -1,10 +1,9 @@
 package com.Premate.Model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +16,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Address {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int address_id;
+	private String area;
 	private String  street;
     private String  city;
     private String  state;
     private String  zip;
-    @ManyToOne()
-    @JoinColumn(name = "stud_id")
-    private Student student;
+
 }

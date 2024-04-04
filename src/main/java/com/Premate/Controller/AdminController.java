@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Premate.Model.Admin;
 import com.Premate.Service.AdminServices;
 import com.Premate.payload.AdminDto;
 
@@ -23,9 +24,9 @@ public class AdminController {
 	AdminServices adminServices;
 	
 	@GetMapping("/getAdmin/{adminId}")
-	public  ResponseEntity<AdminDto> getAdmin(@PathVariable int adminId){
-		AdminDto admin = adminServices.getAdmin(adminId);
-		return new ResponseEntity<AdminDto>(admin,HttpStatus.FOUND);
+	public  ResponseEntity<Admin> getAdmin(@PathVariable int adminId){
+		Admin admin = adminServices.getAdmin(adminId);
+		return new ResponseEntity<Admin>(admin,HttpStatus.OK);
 		
 	}
 	@GetMapping("/getAllAdmin")

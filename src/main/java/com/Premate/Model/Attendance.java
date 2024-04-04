@@ -2,6 +2,9 @@ package com.Premate.Model;
 
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,10 +30,12 @@ public class Attendance {
 	
 	@ManyToOne
 	@JoinColumn(name = "stud_id")
+	
 	private Student student;
 
 	@ManyToOne
 	@JoinColumn(name = "teacher_id")
+	
 	private Teacher teacher;
 
 }

@@ -10,12 +10,17 @@ import org.springframework.stereotype.Service;
 
 import com.Premate.Exception.UserNotVerifiedException;
 import com.Premate.Model.Admin;
+import com.Premate.Model.AdminVerificationToken;
 import com.Premate.Repository.AdminRepo;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     private  AdminRepo adminRepo;
+    @Autowired
+    private AdminEmailService emailService;
+    @Autowired
+    private AdminVerificationTokenService tokenService;
 
 
   
@@ -30,6 +35,8 @@ public class MyUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found: " + username);
         }
         if(!admin.isEnabled()) {
+        	AdminVerificationToken  adminVerificationToken = tokenService.findByAdmin(admin);
+        	emailService.sendVerificationEmail(admin.getEmail(),adminVerificationToken.getToken() );
         	throw new UserNotVerifiedException("Admin not verified");
         }
 

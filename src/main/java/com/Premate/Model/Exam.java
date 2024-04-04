@@ -3,6 +3,9 @@ package com.Premate.Model;
 import java.sql.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,7 +36,8 @@ public class Exam {
     @ManyToMany
     private List<Grade> grades;
 
-    @ManyToMany  
+    @ManyToMany 
+    
     private List<Student> students;
     @OneToOne
     @JoinColumn(name="result_id")

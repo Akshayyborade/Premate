@@ -1,5 +1,7 @@
 package com.Premate.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +25,7 @@ public class Result {
 	private int result_id;
 	@ManyToOne
 	@JoinColumn(name="student_id")
+	
 	private Student student;
 	private String marks;
 	@OneToOne(mappedBy = "result")

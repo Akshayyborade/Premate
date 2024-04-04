@@ -15,7 +15,7 @@ public interface StudentService {
      * @param studentDto The data of the student to be created.
      * @return The created student as a DTO.
      */
-    StudentDto createStud(StudentDto studentDto);
+    StudentDto createStud(StudentDto studentDto, int adminId);
 
     /**
      * Update an existing student.

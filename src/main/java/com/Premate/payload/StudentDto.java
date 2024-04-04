@@ -1,6 +1,7 @@
 package com.Premate.payload;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import com.Premate.Model.Address;
 import com.Premate.Model.Grade;
@@ -29,7 +30,7 @@ public class StudentDto {
     /**
      * The name of the student.
      */
-    private Name studentName;
+    private Name name;
 
     /**
      * The name of the school the student is attending.
@@ -75,4 +76,10 @@ public class StudentDto {
      * The address of the student.
      */
     private Address address;
+    
+    private boolean isactive = false;
+
+	private LocalDate dateOfAddmission;
+    
+  
 }

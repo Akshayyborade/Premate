@@ -25,9 +25,5 @@ public class Batch {
 	private String batchName;
 	private LocalTime startTime;
     private LocalTime endTime;
-    private Integer noOfStudents;
-    @OneToMany(mappedBy = "batch")
-    private List<Grade> grade;
-    @OneToMany(mappedBy = "batch")
-    private List<Student> students;
+   
 }

@@ -2,7 +2,11 @@ package com.Premate.Model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,7 +21,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
+
 @NoArgsConstructor
 @Entity
 public class Grade {
@@ -25,17 +29,21 @@ public class Grade {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int gradeId;
 	private String gradeName;
-	@ManyToOne
-	@JoinColumn(name = "batch_id")
+	private String stream;
+	private String board;
+	@ManyToOne(cascade = CascadeType.ALL)
 	private Batch batch;
 	@OneToMany(mappedBy = "grade")
+   
 	private List<Subjects> subjects;
-	@OneToMany(mappedBy = "grade")
-	private List<Student> students;
+	@OneToMany(mappedBy = "grade", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<StudentEnrollment> students;
+
 	@ManyToOne
 	@JoinColumn(name = "admin_id")
 	private Admin admin;
-	
+
 	@OneToOne(mappedBy = "grade")
 	private Timetable timetable;
+	
 }

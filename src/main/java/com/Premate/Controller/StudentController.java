@@ -15,8 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Premate.Service.AddressService;
+import com.Premate.Service.AdminServices;
 import com.Premate.Service.StudentService;
 import com.Premate.payload.StudentDto;
+import com.Premate.util.StudentRegistrationRequest;
+
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -30,7 +34,9 @@ public class StudentController {
     
     @Autowired
     private StudentService studentService;
-
+    @Autowired
+    private AddressService addressService;
+   
     /**
      * Endpoint for registering a new student.
      *
@@ -39,9 +45,17 @@ public class StudentController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
-    public ResponseEntity<StudentDto> createStudent(@RequestBody StudentDto studentDto){
-        System.out.println(studentDto.toString());
-        StudentDto stud = studentService.createStud(studentDto);
+    public ResponseEntity<StudentDto> createStudent(@RequestBody StudentRegistrationRequest studentData){
+    	
+        System.out.println(studentData);
+      
+        
+       
+        
+        
+        StudentDto stud = studentService.createStud(studentData.getStudentDto(), studentData.getAdminId());
+//        addressService.saveAddressByStudentID(stud.getAddress(),stud.getStud_id());
+        
         return new ResponseEntity<StudentDto>(stud, HttpStatus.CREATED);
     }
 
@@ -63,8 +77,13 @@ public class StudentController {
      */
     @GetMapping("/getAllStudent")
     public ResponseEntity<List<StudentDto>> getAllStudents(){
-        List<StudentDto> allStud = studentService.getAllStud();
-        return new ResponseEntity<List<StudentDto>>(allStud, HttpStatus.FOUND);
+        try {
+            List<StudentDto> allStud = studentService.getAllStud();
+            System.out.println("fetching all student details  "+ allStud);
+            return ResponseEntity.ok(allStud);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -87,7 +106,7 @@ public class StudentController {
      * @return ResponseEntity with the updated student and HTTP status.
      */
     @PutMapping("/updateStudent/{id}")
-    public ResponseEntity<StudentDto> updateStudent(@PathVariable int id, @RequestBody StudentDto studentDto) {
+    public ResponseEntity<StudentDto> updateStudent( @RequestBody StudentDto studentDto,@PathVariable int id) {
         StudentDto updateStud = studentService.updateStud(studentDto, id);
         return new ResponseEntity<StudentDto>(updateStud, HttpStatus.CREATED);
     }

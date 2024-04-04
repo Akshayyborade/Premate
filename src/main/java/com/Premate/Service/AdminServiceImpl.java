@@ -52,10 +52,10 @@ public class AdminServiceImpl implements AdminServices{
 	}
 
 	@Override
-	public AdminDto getAdmin(int id) {
+	public Admin getAdmin(int id) {
 		// TODO Auto-generated method stub
 		Admin existingAdmin = adminRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Admin", "Admin id", id));
-		return modelMapper.map(existingAdmin, AdminDto.class);
+		return existingAdmin;
 	}
 
 	@Override
@@ -70,6 +70,23 @@ public class AdminServiceImpl implements AdminServices{
 		// TODO Auto-generated method stub
 		Admin admin= adminRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Admin", "Admin id", id));
 		return admin.getAppUserRole();
+	}
+
+	@Override
+	public AdminDto findByEmail(String email) {
+		 List<Admin> admins = adminRepo.findByEmail(email);
+
+		    // Handle cases where multiple admins might exist with the same email:
+		    if (admins.isEmpty()) {
+		        return null; // Or throw an exception if no admin is expected
+		    } else if (admins.size() > 1) {
+		        // Log a warning or throw an exception if unexpected (should only be one admin)
+		        // You might need to handle this scenario based on your application's logic.
+		    }
+
+		    // Assuming you expect only one admin:
+		    Admin byEmail = admins.get(0);
+		    return modelMapper.map(byEmail, AdminDto.class);
 	}
 
 }

@@ -1,7 +1,11 @@
 package com.Premate.Model;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -76,7 +80,7 @@ public class Student {
 	/**
 	 * Reference to the parent(s) of the student.
 	 */
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	private Parents parents;
 
 	/**
@@ -92,26 +96,31 @@ public class Student {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "student")
 	private List<Attendance> attendance;
 
-	@ManyToOne
-	@JoinColumn(name = "admin_id")
-	private Admin admin;
-	
+	private int adminId;
+
 	@ManyToOne
 	@JoinColumn(name = "batch_id")
-    private Batch batch;
+	private Batch batch;
 
 	@ManyToMany(mappedBy = "students")
 	private List<Exam> exam;
 	@ManyToOne(cascade = CascadeType.ALL)
 	private Timetable timetable;
 	@OneToMany(mappedBy = "student")
-	private List<Result> results;
-	@OneToMany(mappedBy = "student")
-	private List<Address> address;
+	private List<Result> results; 
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Address address;
 
 	/**
 	 * Role of the student in the application.
 	 */
 	@Enumerated(EnumType.STRING)
 	private AppUserRole appUserRole;
+
+	// adding more field 14/03/24
+
+	private boolean isactive = false;
+
+	private LocalDate dateOfAddmission;
+
 }
