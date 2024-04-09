@@ -35,14 +35,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests
 
                         .requestMatchers("/api/auth/**").permitAll()
-//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")   this will implimented later
-//                        .requestMatchers("/api/student/**").hasAnyRole("ADMIN", "STUDENT")
-//                        .requestMatchers("/api/teachers/**").hasAnyRole("TEACHER", "ADMIN")
+                        .requestMatchers("/error").anonymous()
                         .anyRequest().authenticated()).exceptionHandling(ex->ex.authenticationEntryPoint(point))
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
-                
-//                .formLogin(login -> login.loginPage("/adminLogin").defaultSuccessUrl("/"));
+
                
 		return http.build();
     }

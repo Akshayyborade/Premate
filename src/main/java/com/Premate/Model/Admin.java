@@ -41,8 +41,7 @@ public class Admin implements UserDetails
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int institutionId;
 	private String institutionName;
-	@OneToOne(cascade = CascadeType.ALL)
-	private Name owenerName;
+	private String ownerName;
 	private String email;
 	private String password;
 	private String website;
@@ -109,33 +108,7 @@ public class Admin implements UserDetails
         return appUserRole.equals(role);
     }
 
-//	@Override
-//	public Collection<? extends GrantedAuthority> getAuthorities() {
-//		   System.out.println("User role working");
-//	    return Arrays.asList(new SimpleGrantedAuthority(appUserRole.name()));
-//	 
-//	}
-//
-//	@Override
-//	public String getUsername() {
-//		// TODO Auto-generated method stub
-//	    return email;
-//	}
-//	@Override
-//	public boolean isAccountNonExpired() {
-//		// TODO Auto-generated method stub
-//		return true;
-//	}
-//	@Override
-//	public boolean isAccountNonLocked() {
-//		return true;
-//	}
-//	@Override
-//	public boolean isCredentialsNonExpired() {
-//		// TODO Auto-generated method stub
-//		return true;
-//	}
-//	
+	
 	
 
 }

@@ -72,7 +72,7 @@ public class StudentServiceImpl implements StudentService {
         
         LocalDate localDate = LocalDate.now();
         student.setDateOfAddmission(localDate);
-        Admin adminDto = adminServices.getAdmin(adminid);
+        AdminDto adminDto = adminServices.getAdmin(adminid);
         Admin admin = modelMapper.map(adminDto, Admin.class);
         student.setAdminId(adminid);
         

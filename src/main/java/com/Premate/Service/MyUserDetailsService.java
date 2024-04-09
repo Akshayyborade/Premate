@@ -45,13 +45,6 @@ public class MyUserDetailsService implements UserDetailsService {
             throw new LockedException("Account is locked");
         }
 
-        // Consider using a PasswordEncoder interface implementation for password security
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); // Example encoder
-//        if (!encoder.matches(password, admin.getPassword())) {
-//            throw new BadCredentialsException("Invalid credentials");
-//        }
-
-        // Construct and return UserPrincipal with authorities
         return admin;
     }
 

@@ -15,7 +15,7 @@ public class ApiResponseBuilder {
     private int status = HttpStatus.OK.value();
     private String message;
     private Object data;
-
+    private byte[] byteData;
     // Added method to set message
     public ApiResponseBuilder setMessage(String message) {
         this.message = message;
@@ -35,7 +35,7 @@ public class ApiResponseBuilder {
 
     // Method to build the ApiResponse object
     public ApiResponse build() {
-        return new ApiResponse(status, message, data);
+        return new ApiResponse(status, message, data, byteData );
     }
 
 	

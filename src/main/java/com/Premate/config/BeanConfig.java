@@ -6,6 +6,7 @@ import java.util.Date;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 @Configuration
 public class BeanConfig {
@@ -17,4 +18,5 @@ public class BeanConfig {
     Date localDate() {
     	return new Date();
     }
+	
 }

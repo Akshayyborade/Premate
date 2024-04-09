@@ -210,7 +210,7 @@ public class AuthController {
 		admin.setEnabled(true);
 
 		// Save the updated Admin entity to enable the account
-		adminServices.updateAdmin(modelMapper.map(admin, AdminDto.class), admin.getInstitutionId());
+		adminServices.updateAdminDto(modelMapper.map(admin, AdminDto.class), admin.getInstitutionId());
 
 		// No need to create a new verification token here
 
