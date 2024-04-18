@@ -1,4 +1,4 @@
-package com.Premate.payload;
+package com.Premate.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,11 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponse {
-	private String message;
-	private boolean sucess;
-	
+@NoArgsConstructor
+public class LoginRequest {
+	private String email;
+	private String password;
 
 }

@@ -8,6 +8,7 @@ public class PremateApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PremateApplication.class, args);
+
 	}
 
 }
