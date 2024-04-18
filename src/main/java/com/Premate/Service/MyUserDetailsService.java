@@ -1,11 +1,15 @@
+/*******************************************************************************
+ * Premate- School Management System © 2024 by Akshay Borade is licensed under CC BY-NC-SA 4.0 
+ *******************************************************************************/
 package com.Premate.Service;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.Premate.Exception.UserNotVerifiedException;
@@ -26,20 +30,23 @@ public class MyUserDetailsService implements UserDetailsService {
   
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Admin admin = adminRepo.findByEmail(username).get(0);
-        System.out.println(admin);
+        List<Admin> admins = adminRepo.findByEmail(username);
+        System.out.println(admins);
         // Assuming repository for Admin entity
         System.out.println("in user detail");
-
-        if (admin == null) {
+        if (admins.isEmpty()) {
             throw new UsernameNotFoundException("User not found: " + username);
         }
-        if(!admin.isEnabled()) {
-        	AdminVerificationToken  adminVerificationToken = tokenService.findByAdmin(admin);
-        	emailService.sendVerificationEmail(admin.getEmail(),adminVerificationToken.getToken() );
-        	throw new UserNotVerifiedException("Admin not verified");
-        }
 
+        Admin admin = admins.get(0); // Assuming you're only interested in the first admin with the given email
+        System.out.println(admin);
+        System.out.println("in user detail");
+
+        if (!admin.isEnabled()) {
+            AdminVerificationToken adminVerificationToken = tokenService.findByAdmin(admin);
+            emailService.sendVerificationEmail(admin.getEmail(), adminVerificationToken.getToken());
+            throw new UserNotVerifiedException("Admin not verified");
+        }
         // Check if account is locked before granting access
         if (admin.isLocked()) {
             throw new LockedException("Account is locked");

@@ -18,8 +18,7 @@ public class Address {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int address_id;
-	private String area;
-	private String  street;
+	private String  area;
     private String  city;
     private String  state;
     private String  zip;
