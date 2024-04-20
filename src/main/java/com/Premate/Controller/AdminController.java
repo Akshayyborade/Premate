@@ -58,14 +58,14 @@ public class AdminController {
 
 	@PutMapping("/updateAdmin/{adminId}")
 	public ResponseEntity<AdminDto> updateAdmin(@PathVariable int adminId,
-			@RequestParam("profilePicture") MultipartFile image, @RequestBody AdminDto admin) throws Exception {
+			@RequestParam("profilePicture") MultipartFile image, @RequestParam String admin) throws Exception {
 		System.out.println(admin);
 		System.out.println("in Update Admin ................................");
 		System.out.println(image);
 	
-		// Access decoded values directly from admin object:
-		String institutionName = admin.getInstitutionName();
-		String slogan = admin.getSlogan();
+//		// Access decoded values directly from admin object:
+//		String institutionName = admin.getInstitutionName();
+//		String slogan = admin.getSlogan();
 
 		// ... other logic to update admin data with decoded values
 

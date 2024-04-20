@@ -19,6 +19,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -64,6 +65,7 @@ public class Admin implements UserDetails
 	@OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Grade> grade;
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "addressId", unique = true)
 	private Address address;
 	public Admin(String institutionName, String email, String password, String website, Date foundingDate,
 			String slogan, AppUserRole appUserRole) {
