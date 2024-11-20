@@ -26,4 +26,5 @@ public interface AdminServices {
 	AdminDto findByEmail(String email);
 	AdminDto updateAdminDto(AdminDto adminDto, int adminId);
 	byte[] getProfilePicture(int id);
+	boolean resetPassword(String email, String currentPassword, String newPassword);
 }

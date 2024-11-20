@@ -1,6 +1,7 @@
 package com.Premate.Controller;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
@@ -13,7 +14,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -22,10 +22,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.Premate.Exception.EmailException;
 import com.Premate.Exception.UserNotVerifiedException;
@@ -68,7 +71,7 @@ public class AuthController {
 	// http://localhost:9095/api/auth/signup
 	@PostMapping("/signup")
 	@Transactional
-	public ResponseEntity<ApiResponse> createAdmin(@RequestBody AdminDto adminDto) throws EmailException {
+	public ResponseEntity<ApiResponse<Void>> createAdmin(@RequestBody AdminDto adminDto) throws EmailException {
 
 	    // Fetch admin by email to check for existing accounts
 	    String email = adminDto.getEmail();
@@ -83,7 +86,7 @@ public class AuthController {
 	            if (adminVerificationToken != null) {
 	                // Admin exists, disabled, but has verification token (expected behavior)
 	                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-	                        new ApiResponseBuilder()
+	                        new ApiResponseBuilder<Void>()
 	                                .setStatus(HttpStatus.FORBIDDEN)
 	                                .setMessage("Your account is not verified. Please check your email and verify to proceed.")
 	                                .build());
@@ -92,7 +95,7 @@ public class AuthController {
 	                logger.error("Admin with email {} exists but verification token is not found.", email);
 	                // Specific error response for missing verification token
 	                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-	                        new ApiResponseBuilder()
+	                        new ApiResponseBuilder<Void>()
 	                                .setStatus(HttpStatus.FORBIDDEN)
 	                                .setMessage("Verification token not found for this account. Please contact support.")
 	                                .build());
@@ -100,7 +103,7 @@ public class AuthController {
 	        } else {
 	            // Admin exists and is already enabled, so prompt login
 	            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-	                    new ApiResponseBuilder()
+	                    new ApiResponseBuilder<Void>()
 	                            .setStatus(HttpStatus.CONFLICT)
 	                            .setMessage("User email already registered. Please log in.")
 	                            .build());
@@ -123,7 +126,7 @@ public class AuthController {
 
 	        // Successful registration, return OK response with message
 	        return ResponseEntity.ok(
-	                new ApiResponseBuilder()
+	                new ApiResponseBuilder<Void>()
 	                        .setStatus(HttpStatus.OK)
 	                        .setMessage("Admin registered successfully. Verification email sent.")
 	                        .build());
@@ -131,7 +134,7 @@ public class AuthController {
 	        // Handle email sending error
 	        logger.error("Error sending verification email:", e);
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-	                new ApiResponseBuilder()
+	                new ApiResponseBuilder<Void>()
 	                        .setStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	                        .setMessage("Error sending verification email.")
 	                        .build());
@@ -140,7 +143,7 @@ public class AuthController {
 	        logger.error("Error registering admin:", e);
 	        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // Mark transaction for rollback
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-	                new ApiResponseBuilder()
+	                new ApiResponseBuilder<Void>()
 	                        .setStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	                        .setMessage("Error registering admin.")
 	                        .build());
@@ -155,37 +158,103 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         try {
             // Authenticate user
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
             
             // Load user details
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            // Generate JWT token
-            String token = helper.generateToken(userDetails);
+            // Generate tokens
+            String accessToken = helper.generateAccessToken(userDetails);
+            String refreshToken = helper.generateRefreshToken(userDetails);
 
             // Create login response
             Admin admin = (Admin) userDetails;
             LoginResponse response = new LoginResponse();
-            response.setJwtToken(token);
+            response.setAccessToken(accessToken);
+            response.setRefreshToken(refreshToken);
             response.setMessage("Login successful");
             response.setAdmin(modelMapper.map(admin, AdminDto.class));
 
             return ResponseEntity.ok(response);
         } catch (UserNotVerifiedException e) {
-        	
-            return ResponseEntity.status(HttpStatus.LOCKED)
-                    .body(new LoginResponse("User Not verified. Please check your email and verify your account to proceed.", null));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new LoginResponse("User not verified. Please verify your email to proceed.", null));
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponse("Invalid username or password", null));
+                    .body(new LoginResponse("Invalid credentials", null));
         } catch (Exception ex) {
-        	ex.printStackTrace();
+            logger.error("Login error:", ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new LoginResponse("Login failed", null));
+                    .body(new LoginResponse("An error occurred during login", null));
         }
     }
 
-	
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid authorization header"));
+            }
+
+            String refreshToken = authHeader.substring(7);
+            String username = helper.getUsernameFromToken(refreshToken);
+            
+            if (username == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid refresh token"));
+            }
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            
+            if (!helper.validateToken(refreshToken, userDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid or expired refresh token"));
+            }
+
+            String newAccessToken = helper.generateAccessToken(userDetails);
+            
+            return ResponseEntity.ok(Map.of(
+                "accessToken", newAccessToken,
+                "message", "Token refreshed successfully"
+            ));
+        } catch (Exception e) {
+            logger.error("Token refresh error:", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Error refreshing token"));
+        }
+    }
+
+	private boolean isValidEmail(String email) {
+	    String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+	    return email != null && email.matches(emailRegex);
+	}
+
+	@PostMapping("/check-email")
+	public ResponseEntity<ApiResponse<Boolean>> checkEmail(@RequestParam String email) {
+	    // Validate email format using a regex
+	    if (!isValidEmail(email)) {
+	        return ResponseEntity.badRequest().body(
+	            new ApiResponse<>(400, "Invalid email format")
+	        );
+	    }
+
+	    // Check if the email exists in the database (mocked logic here)
+	    boolean emailExists = adminServices.findByEmail(email) != null;
+
+	    if (emailExists) {
+	        return ResponseEntity.ok(
+	            new ApiResponse<>(200, "Email is already registered", emailExists)
+	        );
+	    } else {
+	        return ResponseEntity.ok(
+	            new ApiResponse<>(200, "Email is available")
+	        );
+	    }
+	}
+
 
 	@ExceptionHandler(BadCredentialsException.class)
 	public String exceptionHandler() {
@@ -193,7 +262,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/verify-email")
-	public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
+	public ResponseEntity<String> verifyEmail(@RequestParam String token) {
 		AdminVerificationToken adminVerificationToken = adminVerificationTokenService.findByToken(token);
 		if (adminVerificationToken == null || adminVerificationToken.getExpiryDate() == null) {
 			return ResponseEntity.badRequest().body("Invalid token or token has no expiry date");
@@ -216,15 +285,40 @@ public class AuthController {
 
 		return ResponseEntity.ok("Email verified successfully");
 	}
+	
     //send Registration form to public 
 	@PostMapping("/sendFormLink")
-	public ResponseEntity<ApiResponse> sendFrormLink(){
-		
+	public ResponseEntity<ApiResponse<Void>> sendFrormLink() {
 		return null;
-		
 	}
 	@GetMapping("/home")
 	public String home() {
 		return "hii ";
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
+		try {
+			if (authHeader != null && authHeader.startsWith("Bearer ")) {
+				String token = authHeader.substring(7);
+				// Add token to blacklist
+				helper.invalidateToken(token);
+				
+				// Clear Spring Security Context
+				SecurityContextHolder.clearContext();
+				
+				return ResponseEntity.ok(Map.of(
+					"message", "Logged out successfully"
+				));
+			}
+			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(Map.of("message", "Invalid authorization header"));
+				
+		} catch (Exception e) {
+			logger.error("Logout error:", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(Map.of("message", "Error during logout"));
+		}
 	}
 }

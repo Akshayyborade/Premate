@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,38 +33,59 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String requestHeader = request.getHeader("Authorization");
-        logger.info("Header: {}", requestHeader);
-        String username = null;
-        String token = null;
+        
+        String path = request.getRequestURI();
+        // Skip token validation for authentication endpoints
+        if (path.startsWith("/api/auth/adminLogin") || 
+            path.startsWith("/api/auth/signup") || 
+            path.startsWith("/api/auth/refresh-token")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-        if (requestHeader != null && requestHeader.startsWith("Bearer")) {
-            token = requestHeader.substring(7);
+        try {
+            String requestHeader = request.getHeader("Authorization");
+            
+            if (requestHeader == null || !requestHeader.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String token = requestHeader.substring(7);
+            String username = null;
+
             try {
                 username = jwtHelper.getUsernameFromToken(token);
-            } catch (IllegalArgumentException e) {
-                logger.error("Illegal Argument while fetching the username", e);
             } catch (ExpiredJwtException e) {
-                logger.error("Given JWT token is expired", e);
-            } catch (MalformedJwtException e) {
-                logger.error("Invalid token: {}", e.getMessage());
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+                return;
+            } catch (Exception e) {
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+                return;
             }
-        } else {
-            logger.info("Invalid Header Value");
-        }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtHelper.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
-                logger.info("Token validation failed");
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                
+                if (jwtHelper.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
+                    );
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            logger.error("Authentication error:", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Authentication error occurred");
+        }
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.getWriter().write(String.format("{\"message\": \"%s\"}", message));
     }
 }

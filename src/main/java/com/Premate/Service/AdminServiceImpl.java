@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -127,5 +128,56 @@ public class AdminServiceImpl implements AdminServices{
 		byte[] profilePicture = admin.getProfilePicture();
 		return profilePicture;
 	}
+
+	public boolean resetPassword(String email, String currentPassword, String newPassword) {
+	    // Input validation
+	    if (email == null || email.isEmpty() || currentPassword == null || currentPassword.isEmpty()
+	            || newPassword == null || newPassword.isEmpty()) {
+	        throw new IllegalArgumentException("Email, current password, and new password cannot be empty.");
+	    }
+
+	    // Validate new password strength (optional)
+	    // You can use a library like OWASP PasswordValidator: https://github.com/OWASP/OWASP-Java-Common/blob/master/src/main/java/org/owasp/validator/password/PasswordValidator.java
+
+	    try {
+	        List<Admin> admins = adminRepo.findByEmail(email);
+	        if (admins.isEmpty()) {
+	            return false; // Email not found
+	        }
+
+	        Admin admin = admins.get(0);
+
+	        // Check current password (assuming password is stored securely hashed)
+	        if (!verifyPassword(admin.getPassword(), currentPassword)) {
+	            return false; // Invalid current password
+	        }
+
+	        // Hash the new password securely (e.g., using bcrypt)
+	        String hashedNewPassword = hashPassword(newPassword);
+
+	        // Update the admin's password in the database
+	        admin.setPassword(hashedNewPassword);
+	        adminRepo.save(admin);
+
+	        return true; // Password reset successful
+	    } catch (Exception e) {
+	        // Log the exception for debugging
+	        e.printStackTrace();
+	        throw new RuntimeException("Error resetting password", e); // Re-throw as unchecked exception
+	    }
+	}
+
+	// Verify password (assuming password is stored as a bcrypt hash)
+	private boolean verifyPassword(String hashedPassword, String rawPassword) {
+	    // Use a secure password hashing library like BCrypt
+	    return BCrypt.checkpw(rawPassword, hashedPassword);
+	}
+
+	// Hash password securely (e.g., using bcrypt)
+	private String hashPassword(String rawPassword) {
+	    // Use a secure password hashing library like BCrypt
+	    return BCrypt.hashpw(rawPassword, BCrypt.gensalt(12)); // Adjust cost factor as needed
+	}
+
 
 }
