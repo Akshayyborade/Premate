@@ -8,11 +8,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.net.SocketException;
+import java.io.IOException;
 
 @Service
 @Slf4j
@@ -23,32 +27,39 @@ public class PaLMServiceImpl implements OpenAIService {
 
     private static final String PALM_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=";
 
+    @Retryable(
+        value = { SocketException.class, IOException.class },
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 1000) // 1 second delay between retries
+    )
     @Override
-    public List<String> generateQuestions(String prompt, int count, String type, String subject) {
+    public List<String> generateQuestions(String prompt, int count, String type, String subject, String language, String classLevel) throws SocketException , IOException {
         try {
             List<String> allQuestions = new ArrayList<>();
-            int questionsPerBatch = 20; // Gemini has limitations per request
+            int questionsPerBatch = 20;
             
             while (allQuestions.size() < count) {
                 int remainingQuestions = Math.min(questionsPerBatch, count - allQuestions.size());
-                List<String> questions = generateQuestionsFromPaLM(remainingQuestions, type, subject);
+                List<String> questions = generateQuestionsFromPaLM(remainingQuestions, type, subject, language, classLevel);
                 allQuestions.addAll(questions);
-                
-                // Add a small delay between requests to avoid rate limiting
                 Thread.sleep(1000);
-                
                 log.info("Progress: Generated {}/{} questions", allQuestions.size(), count);
             }
             
-            log.info("Completed: Generated total {} questions", allQuestions.size());
             return allQuestions;
+        } catch (SocketException e) {
+            log.error("Network connection error while generating questions. Will retry.", e);
+            throw e;
+        } catch (IOException e) {
+            log.error("I/O error while generating questions. Will retry.", e);
+            throw e;
         } catch (Exception e) {
             log.error("Failed to get questions from PaLM API: {}", e.getMessage(), e);
             return Collections.emptyList();
         }
     }
 
-    private List<String> generateQuestionsFromPaLM(int count, String type, String subject) {
+    private List<String> generateQuestionsFromPaLM(int count, String type, String subject, String language, String classLevel) throws SocketException, IOException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -57,7 +68,7 @@ public class PaLMServiceImpl implements OpenAIService {
         requestBody.put("contents", List.of(
             Map.of(
                 "parts", List.of(
-                    Map.of("text", createPrompt(count, type, subject))
+                    Map.of("text", createPrompt(count, type, subject, language, classLevel))
                 )
             )
         ));
@@ -89,31 +100,44 @@ public class PaLMServiceImpl implements OpenAIService {
         }
     }
 
-    private String createPrompt(int count, String type, String subject) {
+    private String createPrompt(int count, String type, String subject, String language, String classLevel) {
+        String questionFormat = switch (type.toLowerCase()) {
+            case "mcq" -> """
+                Q: [Question text]
+                A) [Option A]
+                B) [Option B]
+                C) [Option C]
+                D) [Option D]
+                Correct: [Letter of correct answer]""";
+            case "short" -> """
+                Q: [Question text]
+                Answer: [Concise answer in 30-50 words]
+                Marks: [2-3 marks]""";
+            case "descriptive" -> """
+                Q: [Question text]
+                Answer: [Detailed explanation with key points]
+                Marks: [3-5 marks]""";
+            default -> throw new IllegalArgumentException("Invalid question type: " + type);
+        };
+
         return String.format("""
-            You are an expert teacher. Generate exactly %d multiple choice questions for %s subject.
-            The questions should be suitable for 10th grade students.
+            You are an expert teacher. Generate exactly %d %s questions for %s subject in %s language.
+            The questions should be suitable for %s grade students.
             
             Important Instructions:
             1. Generate exactly %d questions, no more, no less
             2. Each question MUST follow this EXACT format:
-               Q: [Question text]
-               A) [Option A]
-               B) [Option B]
-               C) [Option C]
-               D) [Option D]
-               Correct: [Letter of correct answer]
-            3. Make sure each question has exactly 4 options
-            4. Include only ONE correct answer per question
-            5. Make all options plausible
-            6. Use clear and precise language
-            7. Include a mix of conceptual and calculation questions
-            8. Ensure questions are challenging but appropriate for 10th grade
+               %s
+            3. Use clear and precise language in %s
+            4. Make questions challenging but appropriate for %s grade
+            5. Include a mix of theoretical and application-based questions
+            6. Ensure questions align with %s curriculum
             
             Focus on current curriculum topics in %s.
             Do not include any additional text, explanations, or formatting.
             Start each question with 'Q:' and nothing else.
-            """, count, subject, count, subject);
+            """, count, type, subject, language, classLevel, 
+                 count, questionFormat, language, classLevel, classLevel, subject);
     }
 
     private List<String> parseGeminiResponse(String responseBody) {
@@ -143,7 +167,7 @@ public class PaLMServiceImpl implements OpenAIService {
             String generatedText = parts.get(0).path("text").asText();
             log.debug("Generated text: {}", generatedText);
 
-            List<String> questions = extractQuestions(generatedText);
+            List<String> questions = extractQuestions(generatedText, "mcq");
             log.info("Extracted {} questions from response", questions.size());
             
             return questions;
@@ -153,13 +177,13 @@ public class PaLMServiceImpl implements OpenAIService {
         }
     }
 
-    private List<String> extractQuestions(String text) {
+    private List<String> extractQuestions(String text, String type) {
         List<String> questions = new ArrayList<>();
         String[] possibleQuestions = text.split("(?=Q:)");
 
         for (String question : possibleQuestions) {
             question = question.trim();
-            if (question.startsWith("Q:") && isValidQuestionFormat(question)) {
+            if (question.startsWith("Q:") && isValidQuestionFormat(question, type)) {
                 questions.add(question);
                 log.debug("Added valid question: {}", question);
             } else if (!question.isEmpty()) {
@@ -170,17 +194,24 @@ public class PaLMServiceImpl implements OpenAIService {
         return questions;
     }
 
-    private boolean isValidQuestionFormat(String text) {
-        boolean isValid = text.contains("Q:") && 
+    private boolean isValidQuestionFormat(String text, String type) {
+        return switch (type.toLowerCase()) {
+            case "mcq" -> text.contains("Q:") && 
                          text.contains("A)") && 
                          text.contains("B)") && 
                          text.contains("C)") && 
                          text.contains("D)") && 
                          text.contains("Correct:");
-                         
-        if (!isValid) {
-            log.debug("Invalid question format: {}", text);
-        }
-        return isValid;
+            case "short", "descriptive" -> text.contains("Q:") && 
+                                         text.contains("Answer:") && 
+                                         text.contains("Marks:");
+            default -> false;
+        };
     }
+
+    // @Override
+    // public List<String> generateQuestions(String prompt, int count, String type, String subject) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'generateQuestions'");
+    // }
 } 

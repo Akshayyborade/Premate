@@ -62,7 +62,7 @@ public class QuestionPaperService {
             
             validateInputs(type, difficulty, subject);
             String prompt = buildPrompt(type, difficulty, subject, classLevel, language);
-            List<String> generatedQuestions = questionGenerator.generateQuestions(prompt, count, type, subject);
+            List<String> generatedQuestions = questionGenerator.generateQuestions(prompt, count, type, subject,language, classLevel);
             List<Question> questions = convertToQuestions(generatedQuestions, type, difficulty);
             
             timer.stop(meterRegistry.timer("question.generation.time", 
