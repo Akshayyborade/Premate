@@ -30,6 +30,11 @@ public ResourceNotFoundException(String resourceName2, String fieldName2, String
 	this.stringValue=email;
 	
 }
+public ResourceNotFoundException(String stringValue) {
+	super();
+	this.stringValue = stringValue;
+}
+
 
 
 }

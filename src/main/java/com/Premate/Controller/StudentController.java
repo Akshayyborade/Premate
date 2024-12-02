@@ -2,6 +2,7 @@ package com.Premate.Controller;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Premate.Exception.ResourceNotFoundException;
+import com.Premate.Model.Admin;
+import com.Premate.Model.Student;
+import com.Premate.Repository.AdminRepo;
 import com.Premate.Service.AddressService;
 import com.Premate.Service.AdminServices;
 import com.Premate.Service.StudentService;
@@ -36,6 +41,10 @@ public class StudentController {
     private StudentService studentService;
     @Autowired
     private AddressService addressService;
+    @Autowired
+    private AdminRepo adminRepo;
+    @Autowired
+    private ModelMapper modelMapper;
    
     /**
      * Endpoint for registering a new student.
@@ -45,19 +54,19 @@ public class StudentController {
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
-    public ResponseEntity<StudentDto> createStudent(@RequestBody StudentRegistrationRequest studentData){
-    	
-        System.out.println(studentData);
-      
+    public ResponseEntity<StudentDto> createStud(@RequestBody StudentRegistrationRequest studentData) {
+        // Extract the studentDto and adminId from the request
+        StudentDto studentDto = studentData.getStudentDto();
+        int adminId = studentData.getAdminId();
         
-       
+        // Save the student using the service
+        StudentDto savedStudent = studentService.createStud(studentDto, adminId);
         
-        
-        StudentDto stud = studentService.createStud(studentData.getStudentDto(), studentData.getAdminId());
-//        addressService.saveAddressByStudentID(stud.getAddress(),stud.getStud_id());
-        
-        return new ResponseEntity<StudentDto>(stud, HttpStatus.CREATED);
+        // Return the saved student as a DTO
+        return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
     }
+
+
 
     /**
      * Endpoint for retrieving a student by ID.
@@ -67,7 +76,7 @@ public class StudentController {
      */
     @GetMapping("/getStudent/{studentId}")
     public ResponseEntity<StudentDto> getStudents(@PathVariable int studentId){
-        return new ResponseEntity<StudentDto>(studentService.getStud(studentId), HttpStatus.FOUND);
+        return new ResponseEntity<StudentDto>(studentService.getStud(studentId), HttpStatus.OK);
     }
 
     /**

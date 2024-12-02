@@ -1,13 +1,19 @@
 package com.Premate.Model;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,108 +25,114 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-/**
- * Entity class representing a student.
- */
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Student {
+@ToString(exclude = {"admin", "attendance", "results", "batch", "exam", "timetable"})
+public class Student implements UserDetails {
 
-	/**
-	 * Unique identifier for the student.
-	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int stud_id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int stud_id;
 
-	/**
-	 * Reference to the name of the student.
-	 */
-	@OneToOne(cascade = CascadeType.ALL)
-	private Name studentName;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Name studentName;
 
-	/**
-	 * The name of the school the student is attending.
-	 */
-	private String schoolName;
+    private String schoolName;
+    private String mobNumber;
+    private String email;
+    private String password;
+    private String gender;
+    private Date dobDate;
 
-	/**
-	 * Mobile number of the student.
-	 */
-	private String mobNumber;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Parents parents;
 
-	/**
-	 * Email address of the student.
-	 */
-	private String email;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "gradeId")
+    private Grade grade;
 
-	/**
-	 * Password for the student.
-	 */
-	private String password;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student")
+    private List<Attendance> attendance;
 
-	/**
-	 * Gender of the student.
-	 */
-	private String gender;
+    @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    @JsonBackReference
+    private Admin admin;
 
-	/**
-	 * Date of birth of the student.
-	 */
-	private Date dobDate;
+    @ManyToOne
+    @JoinColumn(name = "batch_id")
+    private Batch batch;
 
-	/**
-	 * Reference to the parent(s) of the student.
-	 */
-	@ManyToOne(cascade = CascadeType.ALL)
-	private Parents parents;
+    @ManyToMany(mappedBy = "students")
+    private List<Exam> exam;
 
-	/**
-	 * Reference to the grade of the student.
-	 */
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "gradeId")
-	private Grade grade;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Timetable timetable;
 
-	/**
-	 * Reference to the attendance of the student.
-	 */
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "student")
-	private List<Attendance> attendance;
+    @OneToMany(mappedBy = "student")
+    private List<Result> results;
 
-	private int adminId;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Address address;
 
-	@ManyToOne
-	@JoinColumn(name = "batch_id")
-	private Batch batch;
+    /**
+     * Role of the student (e.g., ROLE_STUDENT).
+     */
+    @Enumerated(EnumType.STRING)
+    private AppUserRole appUserRole = AppUserRole.STUDENT;
 
-	@ManyToMany(mappedBy = "students")
-	private List<Exam> exam;
-	@ManyToOne(cascade = CascadeType.ALL)
-	private Timetable timetable;
-	@OneToMany(mappedBy = "student")
-	private List<Result> results; 
-	@ManyToOne(cascade = CascadeType.ALL)
-	private Address address;
+    
+    private Boolean isactive = Boolean.TRUE;  // Use Boolean instead of boolean
 
-	/**
-	 * Role of the student in the application.
-	 */
-	@Enumerated(EnumType.STRING)
-	private AppUserRole appUserRole;
+   
+    private LocalDate dateOfAddmission;
 
-	// adding more field 14/03/24
+    /**
+     * Spring Security integration - Methods for UserDetails implementation
+     */
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Returning the student's role as a GrantedAuthority.
+        return List.of(new SimpleGrantedAuthority(appUserRole.name()));
+    }
 
-	private boolean isactive = false;
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
 
-	private LocalDate dateOfAddmission;
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isactive;
+    }
 }

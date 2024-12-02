@@ -13,6 +13,10 @@ import lombok.Setter;
 public class StudentRegistrationRequest {
     private int adminId;
     private StudentDto studentDto;
+	@Override
+	public String toString() {
+		return "StudentRegistrationRequest [adminId=" + adminId + ", studentDto=" + studentDto + "]";
+	}
 
     // Getters and setters
 }

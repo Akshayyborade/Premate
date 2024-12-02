@@ -2,8 +2,6 @@ package com.Premate.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -20,10 +18,6 @@ import io.micrometer.core.instrument.Timer;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +56,7 @@ public class QuestionPaperService {
             
             validateInputs(type, difficulty, subject);
             String prompt = buildPrompt(type, difficulty, subject, classLevel, language);
-            List<String> generatedQuestions = questionGenerator.generateQuestions(prompt, count, type, subject,language, classLevel);
+            List<String> generatedQuestions = questionGenerator.generateQuestions(prompt, count, type, subject,language, classLevel,  difficulty);
             List<Question> questions = convertToQuestions(generatedQuestions, type, difficulty);
             
             timer.stop(meterRegistry.timer("question.generation.time", 
@@ -107,7 +101,7 @@ public class QuestionPaperService {
     private void validateInputs(String type, String difficulty, String subject) {
         Assert.isTrue(List.of("MCQ", "DESCRIPTIVE").contains(type.toUpperCase()),
                 "Invalid question type: " + type);
-        Assert.isTrue(List.of("EASY", "MEDIUM", "HARD").contains(difficulty.toUpperCase()),
+        Assert.isTrue(List.of("EASY", "MEDIUM", "HARD", "SIMPLE").contains(difficulty.toUpperCase()),
                 "Invalid difficulty level: " + difficulty);
         Assert.hasText(subject, "Subject cannot be empty");
     }

@@ -1,7 +1,6 @@
 package com.Premate.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.Premate.Exception.ResourceNotFoundException;
-import com.Premate.Model.Address;
 import com.Premate.Model.Admin;
 import com.Premate.Model.Grade;
 import com.Premate.Model.Name;
@@ -23,7 +21,6 @@ import com.Premate.Repository.ParentsRepo;
 import com.Premate.Repository.StudentRepo;
 import com.Premate.payload.AdminDto;
 import com.Premate.payload.StudentDto;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
 /**
  * Service implementation for managing student-related operations.
@@ -72,9 +69,11 @@ public class StudentServiceImpl implements StudentService {
         
         LocalDate localDate = LocalDate.now();
         student.setDateOfAddmission(localDate);
+       
         AdminDto adminDto = adminServices.getAdmin(adminid);
         Admin admin = modelMapper.map(adminDto, Admin.class);
-        student.setAdminId(adminid);
+        student.setAdmin(admin);
+        System.out.println(student);
         
 
         Student save = studentRepo.save(student);
